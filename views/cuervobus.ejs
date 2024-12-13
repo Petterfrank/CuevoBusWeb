@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CuervoBus</title>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=Apy_Key"
+      defer
+    ></script>
+    <script>
+      const rutas = {
+        rutaA: [
+          { lat: 19.28165451145221, lng: -99.64135624393437 },
+          { lat: 19.284527342079123, lng: -99.63217390710778 },
+          { lat: 19.287217676105403, lng: -99.61065015646203 },
+          { lat: 19.286808932264414, lng: -99.59438589159055 },
+          { lat: 19.28624409743481, lng: -99.57370049447698 },
+          { lat: 19.285769135963836, lng: -99.55618751216198 },
+          { lat: 19.2850762714248, lng: -99.52887229771248 },
+          { lat: 19.2851666223549, lng: -99.51184783694012 },
+          { lat: 19.342074129820688, lng: -99.4759264593618 },
+        ],
+        rutaB: [
+          { lat: 19.18340299962175, lng: -99.46001247680634 },
+          { lat: 19.24716, lng: -99.474463 },
+          { lat: 19.284523343954234, lng: -99.4975876051335 },
+          { lat: 19.342074129820688, lng: -99.4759264593618 },
+        ],
+        rutaC: [
+          { lat: 19.402015104327823, lng: -99.5245932705137 },
+          { lat: 19.396942246894778, lng: -99.49735258404056 },
+          { lat: 19.378943247153295, lng: -99.49725985490346 },
+          { lat: 19.359819905048134, lng: -99.4869019024517 },
+          { lat: 19.342074129820688, lng: -99.4759264593618 },
+        ],
+      };
+
+      let map,
+        directionsService,
+        directionsRenderer,
+        currentRoute = "rutaA";
+
+      function initMap() {
+        directionsService = new google.maps.DirectionsService();
+        directionsRenderer = new google.maps.DirectionsRenderer();
+        map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 12,
+          center: { lat: 19.342074129820688, lng: -99.4759264593618 },
+        });
+        directionsRenderer.setMap(map);
+        drawRoute(currentRoute);
+      }
+
+      function drawRoute(routeName, fromLocation = null) {
+        const route = rutas[routeName];
+        const origin = fromLocation || route[0];
+        const destination = route[route.length - 1];
+
+        directionsService.route(
+          {
+            origin: origin,
+            destination: destination,
+            waypoints: route
+              .slice(1, -1)
+              .map((location) => ({ location, stopover: true })),
+            travelMode: google.maps.TravelMode.DRIVING,
+            avoidTolls: true,
+          },
+          (response, status) => {
+            if (status === google.maps.DirectionsStatus.OK) {
+              directionsRenderer.setDirections(response);
+              populateTable(route);
+            } else {
+              console.error("Error al generar la ruta:", status);
+            }
+          }
+        );
+      }
+
+      function setRoute(routeName) {
+        currentRoute = routeName;
+        drawRoute(routeName);
+      }
+
+      function useCurrentLocationToStop(stop) {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const { latitude, longitude } = position.coords;
+              const fromLocation = { lat: latitude, lng: longitude };
+              directionsService.route(
+                {
+                  origin: fromLocation,
+                  destination: stop,
+                  travelMode: google.maps.TravelMode.DRIVING,
+                  avoidTolls: true,
+                },
+                (response, status) => {
+                  if (status === google.maps.DirectionsStatus.OK) {
+                    directionsRenderer.setDirections(response);
+                  } else {
+                    console.error("Error al generar la ruta:", status);
+                  }
+                }
+              );
+            },
+            (error) => {
+              console.error("Error al obtener la ubicación:", error);
+              alert("No se pudo obtener la ubicación actual.");
+            }
+          );
+        } else {
+          alert("La geolocalización no está soportada en este navegador.");
+        }
+      }
+
+      function populateTable(route) {
+        const tableBody = document.getElementById("stopsTable");
+        tableBody.innerHTML = "";
+        route.forEach((stop, index) => {
+          const row = `
+                    <tr class="border-b">
+                        <td class="p-2">${index + 1}</td>
+                        <td class="p-2">${stop.lat.toFixed(
+                          6
+                        )}, ${stop.lng.toFixed(6)}</td>
+                        <td class="p-2">
+                            <button
+                                onclick="useCurrentLocationToStop({ lat: ${
+                                  stop.lat
+                                }, lng: ${stop.lng} })"
+                                class="bg-green-500 text-white py-1 px-2 rounded-lg hover:bg-green-600 transition"
+                            >
+                                ¿Cómo llegar?
+                            </button>
+                        </td>
+                    </tr>`;
+          tableBody.innerHTML += row;
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", () => initMap());
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      #map {
+        height: 600px;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 min-h-screen flex flex-col">
+    <header class="bg-green-700 text-white p-4 text-center">
+      <h1 class="text-2xl font-bold">CuervoBus - Rutas del Transporte</h1>
+    </header>
+    <main class="flex flex-grow p-4">
+      <!-- Mapa -->
+      <div id="map" class="w-2/3 h-full bg-gray-300 rounded-lg shadow-lg"></div>
+      <!-- Tabla y Botones -->
+      <div class="w-1/3 ml-4">
+        <div class="flex justify-between mb-4">
+          <button
+            onclick="setRoute('rutaA')"
+            class="w-1/3 bg-red-700 text-white py-2 px-4 rounded-lg hover:bg-red-800 transition mx-1"
+          >
+            Ruta Toluca-UTVT
+          </button>
+          <button
+            onclick="setRoute('rutaB')"
+            class="w-1/3 bg-blue-700 text-white py-2 px-4 rounded-lg hover:bg-blue-800 transition mx-1"
+          >
+          Ruta Capulhuac-UTVT
+          </button>
+          <button
+            onclick="setRoute('rutaC')"
+            class="w-1/3 bg-green-700 text-white py-2 px-4 rounded-lg hover:bg-green-800 transition mx-1"
+          >
+          Ruta Xonacatlan-UTVT
+          </button>
+        </div>
+        <table class="table-auto w-full bg-white shadow-lg rounded-lg">
+          <thead class="bg-gray-700 text-white">
+            <tr>
+              <th class="p-2">#</th>
+              <th class="p-2">Coordenadas</th>
+              <th class="p-2">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="stopsTable" class="text-gray-800"></tbody>
+        </table>
+      </div>
+    </main>
+    <footer class="bg-gray-700 text-white text-center p-2">
+      &copy; 2024 CuervoBus. Todos los derechos reservados.
+    </footer>
+  </body>
+</html>

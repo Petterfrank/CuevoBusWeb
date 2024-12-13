@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perfil del Alumno</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-md bg-white shadow-lg rounded-lg p-6">
+      <div class="text-center">
+        <!-- Mostrar imagen de perfil o imagen por defecto -->
+        <img
+          src="<%= alumno.imagen ? alumno.imagen : '/assets/default-profile.png' %>"
+          alt="Foto del Alumno"
+          class="w-24 h-24 mx-auto rounded-full border border-gray-300"
+        />
+
+        <h2 class="text-2xl font-bold mt-4 text-gray-800">
+          <%= alumno.nombre %> <%= alumno.apellidos %>
+        </h2>
+        <p class="text-gray-500 mt-2">Matrícula: <%= alumno.matricula %></p>
+        <p class="text-gray-500">Correo: <%= alumno.correo %></p>
+      </div>
+
+      <div class="mt-6 border-t pt-4">
+        <p class="text-gray-700">
+          <strong>Cuatrimestre:</strong> <%= alumno.cuatrimestre || 'N/A' %>
+        </p>
+        <p class="text-gray-700">
+          <strong>Grupo:</strong> <%= alumno.grupo || 'N/A' %>
+        </p>
+        <p class="text-gray-700">
+          <strong>Teléfono:</strong> <%= alumno.telefono || 'N/A' %>
+        </p>
+      </div>
+
+      <div class="mt-6 flex justify-center space-x-4">
+        <!-- Botón para mostrar el QR en un modal -->
+        <button
+          id="openModal"
+          class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+        >
+          Ver QR
+        </button>
+        <!-- Botón para editar perfil -->
+        <button
+          id="openEditModal"
+          class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          Editar Perfil
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal para el código QR -->
+    <div
+      id="qrModal"
+      class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden"
+    >
+      <div class="bg-white p-6 rounded-lg shadow-lg w-72">
+        <h2 class="text-lg font-bold text-center mb-4">Código QR</h2>
+        <img src="<%= qrCodeUrl %>" alt="Código QR" class="mx-auto" />
+        <button
+          id="closeModal"
+          class="mt-4 bg-red-500 text-white px-4 py-2 rounded-lg w-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal para editar perfil -->
+    <div
+      id="editModal"
+      class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden"
+    >
+      <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Editar Perfil</h2>
+        <form id="editForm" method="POST" enctype="multipart/form-data" class="space-y-4">
+          <div>
+            <label for="editTelefono" class="block text-gray-700 font-medium mb-1">Teléfono</label>
+            <input
+              type="text"
+              id="editTelefono"
+              name="telefono"
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label for="editCorreo" class="block text-gray-700 font-medium mb-1">Correo</label>
+            <input
+              type="email"
+              id="editCorreo"
+              name="correo"
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label for="editImagen" class="block text-gray-700 font-medium mb-1">Imagen</label>
+            <input
+              type="file"
+              id="editImagen"
+              name="imagen"
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div class="flex justify-end space-x-2">
+            <button
+              type="button"
+              class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              onclick="closeEditModal()"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              Guardar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // Modal para código QR
+      const openModal = document.getElementById("openModal");
+      const closeModal = document.getElementById("closeModal");
+      const qrModal = document.getElementById("qrModal");
+
+      openModal.addEventListener("click", () => {
+        qrModal.classList.remove("hidden");
+      });
+
+      closeModal.addEventListener("click", () => {
+        qrModal.classList.add("hidden");
+      });
+
+      // Modal para editar perfil
+      const openEditModal = document.getElementById("openEditModal");
+      const closeEditModal = () => {
+        document.getElementById("editModal").classList.add("hidden");
+      };
+
+      openEditModal.addEventListener("click", () => {
+        document.getElementById("editModal").classList.remove("hidden");
+
+        // Rellenar datos actuales del alumno
+        document.getElementById("editTelefono").value = "<%= alumno.telefono || '' %>";
+        document.getElementById("editCorreo").value = "<%= alumno.correo || '' %>";
+      });
+
+      document.getElementById("editForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+
+        try {
+          const response = await fetch("/alumnos/editar", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (response.ok) {
+            alert("Perfil actualizado correctamente.");
+            location.reload();
+          } else {
+            alert("Error al actualizar el perfil.");
+          }
+        } catch (error) {
+          console.error("Error al actualizar el perfil:", error);
+          alert("No se pudo actualizar el perfil.");
+        }
+      });
+    </script>
+  </body>
+</html>
