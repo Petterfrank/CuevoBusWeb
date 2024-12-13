@@ -10,19 +10,170 @@
       integrity="sha384-k8QvTfATK+vm8P4p8vnDtr0zJktzXKjW5nRThJcTnPqyc6r+RHT9hXSK/7sn5BPL"
       crossorigin="anonymous"
     ></script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(
+          to bottom,
+          #1f2937,
+          #374151
+        ); /* Fondo oscuro con gradiente */
+        color: white; /* Texto blanco para contraste */
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        margin: 0;
+        font-family: "Inter", sans-serif;
+      }
+      main {
+        flex: 1;
+      }
+
+      footer {
+        background: #1f2937; /* Gris oscuro */
+        color: white;
+        text-align: center;
+        padding: 1rem 0;
+        width: 100%; /* Asegura que ocupe todo el ancho */
+        margin-top: auto;
+      }
+
+      footer a {
+        color: #10b981; /* Verde */
+        text-decoration: none;
+        margin: 0 10px;
+      }
+
+      footer a:hover {
+        color: #34d399; /* Verde más claro */
+      }
+      .dashboard-header {
+        background: rgba(255, 255, 255, 0.1); /* Fondo translúcido */
+        backdrop-filter: blur(10px); /* Efecto de desenfoque */
+        border-radius: 8px; /* Bordes redondeados */
+        padding: 16px; /* Espaciado interno */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Sombra para destacar */
+      }
+
+      button {
+        background-color: #4caf50; /* Verde para botones por defecto */
+        color: white; /* Texto blanco */
+        border: none; /* Sin bordes */
+        border-radius: 8px; /* Bordes redondeados */
+        padding: 10px 20px; /* Espaciado interno */
+        font-size: 16px; /* Tamaño de fuente */
+        cursor: pointer; /* Cursor tipo "pointer" */
+        transition: all 0.2s ease-in-out; /* Transición suave */
+      }
+
+      button:hover {
+        transform: scale(1.05); /* Escalado al pasar el cursor */
+        background-color: #45a049; /* Cambio a un verde más oscuro */
+      }
+
+      .bg-green-600:hover {
+        background-color: #218838 !important; /* Hover específico para verde oscuro */
+      }
+
+      .bg-gray-800 {
+        background-color: rgba(
+          31,
+          41,
+          55,
+          0.9
+        ); /* Fondo gris oscuro translúcido */
+      }
+
+      .bg-opacity-50 {
+        opacity: 0.5; /* Reducir la opacidad para overlays */
+      }
+
+      table {
+        width: 100%; /* Tabla ocupa todo el ancho */
+        border-collapse: collapse; /* Sin espacios entre celdas */
+      }
+
+      th,
+      td {
+        border: 1px solid #e5e7eb; /* Borde claro para celdas */
+        padding: 10px; /* Espaciado interno */
+        text-align: left; /* Alineación a la izquierda */
+      }
+
+      th {
+        background-color: #f3f4f6; /* Fondo gris claro para encabezado */
+        font-weight: bold; /* Texto en negrita */
+      }
+
+      tr:hover {
+        background-color: #f1f5f9; /* Fondo más claro al pasar el cursor */
+      }
+
+      .input,
+      select {
+        width: 100%; /* Campo ocupa todo el ancho disponible */
+        padding: 10px; /* Espaciado interno */
+        border: 1px solid #d1d5db; /* Borde gris claro */
+        border-radius: 8px; /* Bordes redondeados */
+        font-size: 16px; /* Tamaño de fuente */
+        outline: none; /* Sin borde azul al enfocar */
+        transition: border-color 0.3s ease-in-out; /* Transición suave */
+      }
+
+      .input:focus,
+      select:focus {
+        border-color: #4caf50; /* Borde verde al enfocar */
+        box-shadow: 0 0 5px rgba(72, 239, 128, 0.8); /* Sombra verde */
+      }
+
+      .hidden {
+        display: none; /* Elementos ocultos por defecto */
+      }
+
+      .flex {
+        display: flex; /* Contenedor flexible */
+      }
+
+      .justify-center {
+        justify-content: center; /* Centrar elementos horizontalmente */
+      }
+
+      .items-center {
+        align-items: center; /* Centrar elementos verticalmente */
+      }
+
+      .rounded-lg {
+        border-radius: 12px; /* Bordes redondeados */
+      }
+
+      .shadow-lg {
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3); /* Sombra para elevar elementos */
+      }
+    </style>
   </head>
   <body class="bg-gray-100 min-h-screen font-sans">
+    <form action="/logout" method="POST" class="absolute top-4 right-4">
+      <button
+        type="submit"
+        class="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg transition"
+      >
+        Cerrar Sesión
+      </button>
+    </form>
     <div class="container mx-auto px-4 py-6">
       <!-- Encabezado -->
       <header class="mb-6">
-        <h1 class="text-3xl font-bold text-gray-800">
+        <h1 class="text-3xl font-bold text-white">
           Bienvenido, <%= tutor.nombre %>
         </h1>
         <p class="text-gray-600">Gestiona tus alumnos desde aquí.</p>
       </header>
 
       <!-- Botón para abrir modal de agregar -->
-      <section class="mb-8">
+      <section class="mb-8 flex justify-end">
         <button
           class="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
           onclick="openAddModal()"
@@ -34,123 +185,341 @@
       <!-- Modales -->
 
       <!-- Modal para agregar alumno -->
-      <div id="addStudentModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+      <div
+        id="addStudentModal"
+        class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden"
+      >
         <div class="bg-white rounded-lg shadow-lg p-6 w-96">
-          <h2 class="text-xl font-semibold text-gray-800 mb-4">Agregar Alumno</h2>
-          <form id="addStudentForm" method="POST" class="space-y-4" onsubmit="handleAddStudent(event)">
+          <h2 class="text-xl font-semibold text-gray-800 mb-4">
+            Agregar Alumno
+          </h2>
+          <form
+            id="addStudentForm"
+            method="POST"
+            class="space-y-4"
+            onsubmit="handleAddStudent(event)"
+          >
             <div>
-              <label for="addNombre" class="block text-gray-700 font-medium mb-1">Nombre</label>
-              <input type="text" id="addNombre" name="nombre" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
+              <label
+                for="addNombre"
+                class="block text-gray-700 font-medium mb-1"
+                >Nombre</label
+              >
+              <input
+                type="text"
+                id="addNombre"
+                name="nombre"
+                required
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
             </div>
             <div>
-              <label for="addApellidos" class="block text-gray-700 font-medium mb-1">Apellidos</label>
-              <input type="text" id="addApellidos" name="apellidos" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
+              <label
+                for="addApellidos"
+                class="block text-gray-700 font-medium mb-1"
+                >Apellidos</label
+              >
+              <input
+                type="text"
+                id="addApellidos"
+                name="apellidos"
+                required
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
             </div>
             <div>
-              <label for="addMatricula" class="block text-gray-700 font-medium mb-1">Matrícula</label>
-              <input type="text" id="addMatricula" name="matricula" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
+              <label
+                for="addMatricula"
+                class="block text-gray-700 font-medium mb-1"
+                >Matrícula</label
+              >
+              <input
+                type="text"
+                id="addMatricula"
+                name="matricula"
+                required
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
             </div>
             <div>
-              <label for="addContraseña" class="block text-gray-700 font-medium mb-1">Contraseña</label>
-              <input type="password" id="addContraseña" name="contraseña" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
+              <label
+                for="addContraseña"
+                class="block text-gray-700 font-medium mb-1"
+                >Contraseña</label
+              >
+              <input
+                type="password"
+                id="addContraseña"
+                name="contraseña"
+                required
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
             </div>
             <div>
-              <label for="addCarrera" class="block text-gray-700 font-medium mb-1">Carrera</label>
-              <select id="addCarrera" name="carrera" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+              <label
+                for="addCarrera"
+                class="block text-gray-700 font-medium mb-1"
+                >Carrera</label
+              >
+              <select
+                id="addCarrera"
+                name="carrera"
+                required
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              >
                 <!-- Opciones dinámicas cargadas desde el servidor -->
               </select>
             </div>
             <div>
-              <label for="addGrupo" class="block text-gray-700 font-medium mb-1">Grupo</label>
-              <input type="text" id="addGrupo" name="grupo" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
+              <label for="addGrupo" class="block text-gray-700 font-medium mb-1"
+                >Grupo</label
+              >
+              <input
+                type="text"
+                id="addGrupo"
+                name="grupo"
+                required
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
             </div>
             <div>
-              <label for="addCuatrimestre" class="block text-gray-700 font-medium mb-1">Cuatrimestre</label>
-              <input type="number" id="addCuatrimestre" name="cuatrimestre" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
+              <label
+                for="addCuatrimestre"
+                class="block text-gray-700 font-medium mb-1"
+                >Cuatrimestre</label
+              >
+              <input
+                type="number"
+                id="addCuatrimestre"
+                name="cuatrimestre"
+                required
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
             </div>
             <div>
-              <label for="addIdCarrera" class="block text-gray-700 font-medium mb-1">ID Carrera</label>
-              <input type="text" id="addIdCarrera" name="idCarrera" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
+              <label
+                for="addIdCarrera"
+                class="block text-gray-700 font-medium mb-1"
+                >ID Carrera</label
+              >
+              <input
+                type="text"
+                id="addIdCarrera"
+                name="idCarrera"
+                required
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
             </div>
             <div class="flex justify-end space-x-2">
-              <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded-lg" onclick="closeAddModal()">Cancelar</button>
-              <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Guardar</button>
+              <button
+                type="button"
+                class="px-4 py-2 bg-gray-500 text-white rounded-lg"
+                onclick="closeAddModal()"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Guardar
+              </button>
             </div>
           </form>
         </div>
       </div>
 
       <!-- Modal para editar alumno -->
-      <div id="editStudentModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+      <div
+        id="editStudentModal"
+        class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden"
+      >
         <div class="bg-white rounded-lg shadow-lg p-6 w-96">
-          <h2 class="text-xl font-semibold text-gray-800 mb-4">Editar Alumno</h2>
-          <form id="editStudentForm" method="POST" class="space-y-4" onsubmit="handleEditStudent(event)">
+          <h2 class="text-xl font-semibold text-gray-800 mb-4">
+            Editar Alumno
+          </h2>
+          <form
+            id="editStudentForm"
+            method="POST"
+            class="space-y-4"
+            onsubmit="handleEditStudent(event)"
+          >
             <input type="hidden" id="editStudentId" />
             <div>
-              <label for="editNombre" class="block text-gray-700 font-medium mb-1">Nombre</label>
-              <input type="text" id="editNombre" name="nombre" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
+              <label
+                for="editNombre"
+                class="block text-gray-700 font-medium mb-1"
+                >Nombre</label
+              >
+              <input
+                type="text"
+                id="editNombre"
+                name="nombre"
+                required
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
             </div>
             <div>
-              <label for="editApellidos" class="block text-gray-700 font-medium mb-1">Apellidos</label>
-              <input type="text" id="editApellidos" name="apellidos" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
+              <label
+                for="editApellidos"
+                class="block text-gray-700 font-medium mb-1"
+                >Apellidos</label
+              >
+              <input
+                type="text"
+                id="editApellidos"
+                name="apellidos"
+                required
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
             </div>
             <div>
-              <label for="editMatricula" class="block text-gray-700 font-medium mb-1">Matrícula</label>
-              <input type="text" id="editMatricula" name="matricula" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
+              <label
+                for="editMatricula"
+                class="block text-gray-700 font-medium mb-1"
+                >Matrícula</label
+              >
+              <input
+                type="text"
+                id="editMatricula"
+                name="matricula"
+                required
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
             </div>
             <div>
-              <label for="editCarrera" class="block text-gray-700 font-medium mb-1">ID Carrera</label>
-              <input type="text" id="editCarrera" name="carrera" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
+              <label
+                for="editCarrera"
+                class="block text-gray-700 font-medium mb-1"
+                >ID Carrera</label
+              >
+              <input
+                type="text"
+                id="editCarrera"
+                name="carrera"
+                required
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
             </div>
             <div>
-              <label for="editGrupo" class="block text-gray-700 font-medium mb-1">Grupo</label>
-              <input type="text" id="editGrupo" name="grupo" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
+              <label
+                for="editGrupo"
+                class="block text-gray-700 font-medium mb-1"
+                >Grupo</label
+              >
+              <input
+                type="text"
+                id="editGrupo"
+                name="grupo"
+                required
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
             </div>
             <div>
-              <label for="editCuatrimestre" class="block text-gray-700 font-medium mb-1">Cuatrimestre</label>
-              <input type="number" id="editCuatrimestre" name="cuatrimestre" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
+              <label
+                for="editCuatrimestre"
+                class="block text-gray-700 font-medium mb-1"
+                >Cuatrimestre</label
+              >
+              <input
+                type="number"
+                id="editCuatrimestre"
+                name="cuatrimestre"
+                required
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
             </div>
             <div>
-              <label for="editIdCarrera" class="block text-gray-700 font-medium mb-1">ID Carrera</label>
-              <input type="text" id="editIdCarrera" name="idCarrera" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
+              <label
+                for="editIdCarrera"
+                class="block text-gray-700 font-medium mb-1"
+                >ID Carrera</label
+              >
+              <input
+                type="text"
+                id="editIdCarrera"
+                name="idCarrera"
+                required
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
             </div>
             <div class="flex justify-end space-x-2">
-              <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded-lg" onclick="closeEditModal()">Cancelar</button>
-              <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Guardar</button>
+              <button
+                type="button"
+                class="px-4 py-2 bg-gray-500 text-white rounded-lg"
+                onclick="closeEditModal()"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Guardar
+              </button>
             </div>
           </form>
         </div>
       </div>
 
       <!-- Modal para confirmar eliminación -->
-      <div id="deleteConfirmModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+      <div
+        id="deleteConfirmModal"
+        class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden"
+      >
         <div class="bg-white rounded-lg shadow-lg p-6 w-96">
-          <h2 class="text-xl font-semibold text-gray-800 mb-4">Confirmar Eliminación</h2>
+          <h2 class="text-xl font-semibold text-gray-800 mb-4">
+            Confirmar Eliminación
+          </h2>
           <p id="deleteMessage" class="text-gray-700 mb-4"></p>
           <div class="flex justify-end space-x-2">
-            <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded-lg" onclick="closeDeleteModal()">Cancelar</button>
-            <button id="confirmDeleteBtn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Eliminar</button>
+            <button
+              type="button"
+              class="px-4 py-2 bg-gray-500 text-white rounded-lg"
+              onclick="closeDeleteModal()"
+            >
+              Cancelar
+            </button>
+            <button
+              id="confirmDeleteBtn"
+              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+            >
+              Eliminar
+            </button>
           </div>
         </div>
       </div>
 
       <!-- Lista de alumnos -->
       <section class="bg-white shadow rounded-lg p-6">
-        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Lista de Alumnos</h2>
+        <h2 class="text-2xl font-semibold text-black mb-4">Lista de Alumnos</h2>
         <table class="w-full border-collapse border border-gray-200">
           <thead class="bg-gray-100">
             <tr>
-              <th class="border border-gray-200 px-4 py-2 text-left">Nombre</th>
-              <th class="border border-gray-200 px-4 py-2 text-left">Apellidos</th>
-              <th class="border border-gray-200 px-4 py-2 text-left">Matrícula</th>
-              <th class="border border-gray-200 px-4 py-2 text-center">Acciones</th>
+              <th class="border text-black border-gray-200 px-4 py-2 text-left">
+                Nombre
+              </th>
+              <th class="border text-black border-gray-200 px-4 py-2 text-left">
+                Apellidos
+              </th>
+              <th class="border text-black border-gray-200 px-4 py-2 text-left">
+                Matrícula
+              </th>
+              <th
+                class="border text-black border-gray-200 px-4 py-2 text-center"
+              >
+                Acciones
+              </th>
             </tr>
           </thead>
-          <tbody id="studentList" class="divide-y divide-gray-200"></tbody>
+          <tbody
+            id="studentList"
+            class="divide-y divide-gray-200 text-black"
+          ></tbody>
         </table>
       </section>
     </div>
-
+    <main class="max-w-lg w-full p-8 text-center ">
     <script>
       async function loadStudents() {
         const response = await fetch("/tutores/alumnos");
@@ -180,7 +549,8 @@
 
         carreraSelect.innerHTML = carreras
           .map(
-            (carrera) => `<option value="${carrera.id}">${carrera.nombre}</option>`
+            (carrera) =>
+              `<option value="${carrera.id}">${carrera.nombre}</option>`
           )
           .join("");
       }
@@ -194,7 +564,16 @@
         document.getElementById("addStudentModal").classList.add("hidden");
       }
 
-      function openEditModal(id, nombre, apellidos, matricula, carrera, grupo, cuatrimestre, idCarrera) {
+      function openEditModal(
+        id,
+        nombre,
+        apellidos,
+        matricula,
+        carrera,
+        grupo,
+        cuatrimestre,
+        idCarrera
+      ) {
         document.getElementById("editStudentId").value = id;
         document.getElementById("editNombre").value = nombre;
         document.getElementById("editApellidos").value = apellidos;
@@ -244,8 +623,11 @@
       function openDeleteModal(id, nombre) {
         const deleteMessage = `¿Seguro que deseas eliminar al alumno "${nombre}"?`;
         document.getElementById("deleteMessage").textContent = deleteMessage;
-        document.getElementById("confirmDeleteBtn").onclick = () => handleDeleteStudent(id);
-        document.getElementById("deleteConfirmModal").classList.remove("hidden");
+        document.getElementById("confirmDeleteBtn").onclick = () =>
+          handleDeleteStudent(id);
+        document
+          .getElementById("deleteConfirmModal")
+          .classList.remove("hidden");
       }
 
       function closeDeleteModal() {
@@ -263,5 +645,7 @@
 
       loadStudents();
     </script>
+    </main>
+    <%- include('footer') %>
   </body>
 </html>

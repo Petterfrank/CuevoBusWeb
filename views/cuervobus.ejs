@@ -4,8 +4,28 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CuervoBus</title>
+    <style>
+       footer {
+        background: #1f2937; /* Gris oscuro */
+        color: white;
+        text-align: center;
+        padding: 1rem 0;
+        width: 100%; /* Asegura que ocupe todo el ancho */
+        margin-top: auto;
+      }
+
+      footer a {
+        color: #10b981; /* Verde */
+        text-decoration: none;
+        margin: 0 10px;
+      }
+
+      footer a:hover {
+        color: #34d399; /* Verde más claro */
+      }
+    </style>
     <script
-      src="https://maps.googleapis.com/maps/api/js?key=Apy_Key"
+      src="https://maps.googleapis.com/maps/api/js?key=apykey"
       defer
     ></script>
     <script>
@@ -35,12 +55,12 @@
           { lat: 19.342074129820688, lng: -99.4759264593618 },
         ],
       };
-
+      
       let map,
         directionsService,
         directionsRenderer,
         currentRoute = "rutaA";
-
+      
       function initMap() {
         directionsService = new google.maps.DirectionsService();
         directionsRenderer = new google.maps.DirectionsRenderer();
@@ -51,12 +71,12 @@
         directionsRenderer.setMap(map);
         drawRoute(currentRoute);
       }
-
+      
       function drawRoute(routeName, fromLocation = null) {
         const route = rutas[routeName];
         const origin = fromLocation || route[0];
         const destination = route[route.length - 1];
-
+      
         directionsService.route(
           {
             origin: origin,
@@ -77,12 +97,12 @@
           }
         );
       }
-
+      
       function setRoute(routeName) {
         currentRoute = routeName;
         drawRoute(routeName);
       }
-
+      
       function useCurrentLocationToStop(stop) {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
@@ -114,7 +134,7 @@
           alert("La geolocalización no está soportada en este navegador.");
         }
       }
-
+      
       function populateTable(route) {
         const tableBody = document.getElementById("stopsTable");
         tableBody.innerHTML = "";
@@ -139,60 +159,74 @@
           tableBody.innerHTML += row;
         });
       }
-
+      
       document.addEventListener("DOMContentLoaded", () => initMap());
-    </script>
+      </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       #map {
-        height: 600px;
+        height: 83.333333%;
         width: 100%;
+        border-radius: 15px;
+        overflow: hidden;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        height: 100vh;
+        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+          url("https://i.ibb.co/gFZcxnK/background.jpg");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
       }
     </style>
   </head>
-  <body class="bg-gray-100 min-h-screen flex flex-col">
-    <header class="bg-green-700 text-white p-4 text-center">
-      <h1 class="text-2xl font-bold">CuervoBus - Rutas del Transporte</h1>
-    </header>
-    <main class="flex flex-grow p-4">
-      <!-- Mapa -->
-      <div id="map" class="w-2/3 h-full bg-gray-300 rounded-lg shadow-lg"></div>
-      <!-- Tabla y Botones -->
-      <div class="w-1/3 ml-4">
-        <div class="flex justify-between mb-4">
-          <button
-            onclick="setRoute('rutaA')"
-            class="w-1/3 bg-red-700 text-white py-2 px-4 rounded-lg hover:bg-red-800 transition mx-1"
-          >
-            Ruta Toluca-UTVT
-          </button>
-          <button
-            onclick="setRoute('rutaB')"
-            class="w-1/3 bg-blue-700 text-white py-2 px-4 rounded-lg hover:bg-blue-800 transition mx-1"
-          >
-          Ruta Capulhuac-UTVT
-          </button>
-          <button
-            onclick="setRoute('rutaC')"
-            class="w-1/3 bg-green-700 text-white py-2 px-4 rounded-lg hover:bg-green-800 transition mx-1"
-          >
-          Ruta Xonacatlan-UTVT
-          </button>
+  <body class="bg-gray-200 min-h-screen flex flex-col">
+    <!-- Header -->
+  
+    <!-- Contenido Principal -->
+    <main class="flex flex-grow items-center justify-center px-6 gap-6 overflow-hidden">
+      <!-- Contenedor de Mapa -->
+      <div id="map" class="w-2/3 shadow-2xl"></div>
+  
+      <!-- Contenedor de Rutas -->
+      <section class="w-1/3 bg-white bg-opacity-80 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden h-5/6">
+        <div class="mb-6">
+          <!-- Contenedor de CuervoBus con posición ajustada -->
+          <div class="bg-green-800 text-white py-4 text-center shadow-lg w-full z-10 sticky top-0">
+            <h1 class="text-xl font-semibold tracking-wide">CuervoBus</h1>
+          </div>
+  
+          <!-- Botones de Rutas -->
+          <h2 class="text-gray-700 text-xl font-bold m-2">Rutas</h2>
+          <div class="flex justify-between gap-2 m-2">
+            <button onclick="setRoute('rutaA')" class="w-1/3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full transition">Toluca - UTVT</button>
+            <button onclick="setRoute('rutaB')" class="w-1/3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full transition">Capulhuac - UTVT</button>
+            <button onclick="setRoute('rutaC')" class="w-1/3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full transition">Xona - UTVT</button>
+          </div>
         </div>
-        <table class="table-auto w-full bg-white shadow-lg rounded-lg">
-          <thead class="bg-gray-700 text-white">
-            <tr>
-              <th class="p-2">#</th>
-              <th class="p-2">Coordenadas</th>
-              <th class="p-2">Acción</th>
-            </tr>
-          </thead>
-          <tbody id="stopsTable" class="text-gray-800"></tbody>
-        </table>
-      </div>
+  
+        <!-- Tabla de Paradas -->
+        <div class="overflow-auto h-[65%]">
+          <table class="table-auto h-full w-full text-gray-700 overflow-auto">
+            <thead class="bg-gray-700 text-white rounded-t-lg">
+              <tr class="sticky top-[0px] bg-gray-700">
+                <th class="p-2">#</th>
+                <th class="p-2">Coordenadas</th>
+                <th class="p-2">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="stopsTable" class="text-center"></tbody>
+          </table>
+        </div>
+      </section>
     </main>
-    <footer class="bg-gray-700 text-white text-center p-2">
-      &copy; 2024 CuervoBus. Todos los derechos reservados.
-    </footer>
+  
+    <!-- Footer -->
+    <%- include('footer') %>
   </body>
+  
+  
 </html>
